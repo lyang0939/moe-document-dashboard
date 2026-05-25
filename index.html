@@ -1,256 +1,108 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>教育部來文公文分析儀表板</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<title>公文來文分析平台</title>
 <style>
 :root{
-  --dark:#1a365d;--mid:#2b6cb0;--light:#ebf4ff;--green:#276749;
-  --gold:#b7791f;--red:#c53030;--purple:#553c9a;--teal:#2c7a7b;
-  --grey:#718096;--bg:#f0f4f8;--card:#fff;--border:#e2e8f0;
+  --dark:#1a365d;--mid:#2b6cb0;--light:#ebf4ff;
+  --green:#276749;--gold:#b7791f;--bg:#f0f4f8;--card:#fff;--border:#e2e8f0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;background:var(--bg);color:#2d3748;font-size:14px}
+body{font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;background:var(--bg);color:#2d3748;min-height:100vh}
 
-/* ── Header ── */
 header{background:linear-gradient(135deg,var(--dark) 0%,var(--mid) 100%);color:#fff;padding:0}
-.header-inner{max-width:1400px;margin:0 auto;padding:22px 32px;display:flex;align-items:center;gap:20px}
-.header-icon{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
-.header-text h1{font-size:20px;font-weight:700;letter-spacing:.5px}
-.header-text p{font-size:12px;opacity:.75;margin-top:3px}
-.header-badge{margin-left:auto;background:rgba(255,255,255,.18);border-radius:20px;padding:6px 14px;font-size:12px;white-space:nowrap}
+.header-inner{max-width:1100px;margin:0 auto;padding:28px 32px;display:flex;align-items:center;gap:18px}
+.header-icon{width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.header-text h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+.header-text p{font-size:13px;opacity:.75;margin-top:4px}
 
-/* ── Layout ── */
-.main{max-width:1400px;margin:0 auto;padding:24px 32px 40px}
+.main{max-width:1100px;margin:0 auto;padding:36px 32px 60px}
 
-/* ── KPI Cards ── */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
-.kpi{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:4px solid var(--mid);position:relative;overflow:hidden}
-.kpi::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(43,108,176,.06)}
-.kpi .label{font-size:11px;font-weight:600;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.kpi .val{font-size:30px;font-weight:800;color:var(--dark);line-height:1}
-.kpi .sub{font-size:11px;color:var(--grey);margin-top:6px}
-.kpi.green{border-color:#38a169}.kpi.green .val{color:#276749}
-.kpi.gold{border-color:#d69e2e}.kpi.gold .val{color:var(--gold)}
-.kpi.red{border-color:#e53e3e}.kpi.red .val{color:var(--red)}
-.kpi.purple{border-color:#805ad5}.kpi.purple .val{color:var(--purple)}
+.section-title{font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ── Charts grid ── */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
-.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
-.card{background:var(--card);border-radius:14px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-.card h2{font-size:13px;font-weight:700;color:#4a5568;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.card h2::before{content:'';display:inline-block;width:4px;height:16px;background:var(--mid);border-radius:2px;flex-shrink:0}
-canvas{display:block;width:100%!important}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
 
-/* ── Table ── */
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--light);color:#2c5282;font-weight:600;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border)}
-td{padding:8px 12px;border-bottom:1px solid var(--border)}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f7fafc}
-.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:var(--dark)}
-.pct{text-align:right;color:var(--grey);width:52px}
-.bar-wrap{width:100px;background:#edf2f7;border-radius:4px;height:8px;overflow:hidden}
-.bar-fill{height:100%;background:linear-gradient(90deg,var(--mid),#63b3ed);border-radius:4px;transition:width .3s}
-.scroll-table{max-height:360px;overflow-y:auto;border-radius:0 0 8px 8px}
+.card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);transition:transform .18s,box-shadow .18s;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
 
-/* ── Dept badge ── */
-.dept-chip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:var(--light);color:var(--mid)}
+.card-banner{height:8px;background:linear-gradient(90deg,var(--mid),#63b3ed)}
+.card-banner.green{background:linear-gradient(90deg,#276749,#48bb78)}
+.card-banner.gold{background:linear-gradient(90deg,#b7791f,#f6ad55)}
 
-/* ── Footer ── */
-footer{text-align:center;padding:20px;color:#a0aec0;font-size:11px;border-top:1px solid var(--border);margin-top:8px}
+.card-body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column}
+.card-icon{font-size:32px;margin-bottom:12px}
+.card-title{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:6px}
+.card-desc{font-size:12px;color:#718096;line-height:1.7;flex:1}
+
+.card-meta{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.blue{background:var(--light);color:var(--mid)}
+.badge.green{background:#f0fff4;color:#276749}
+.badge.grey{background:#f7fafc;color:#718096}
+
+.card-arrow{margin-left:auto;color:var(--mid);font-size:18px;opacity:.6}
+
+footer{text-align:center;padding:24px;color:#a0aec0;font-size:11px;border-top:1px solid var(--border)}
 footer a{color:var(--mid);text-decoration:none}
-
-@media(max-width:900px){
-  .kpi-row{grid-template-columns:repeat(2,1fr)}
-  .grid-2,.grid-3{grid-template-columns:1fr}
-}
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <div class="header-icon">📋</div>
+    <div class="header-icon">🗂️</div>
     <div class="header-text">
-      <h1>教育部來文公文分析儀表板</h1>
-      <p>資料期間：2025年7月 ～ 2026年5月　｜　來文機關：教育部（含所屬機關）</p>
+      <h1>公文來文分析平台</h1>
+      <p>依來文單位分類整理的公文收文儀表板集合</p>
     </div>
-    <div class="header-badge">共 1743 筆收文</div>
   </div>
 </header>
 
 <div class="main">
 
-  <!-- KPI Cards -->
-  <div class="kpi-row">
-    <div class="kpi">
-      <div class="label">總來文件數</div>
-      <div class="val">1743</div>
-      <div class="sub">佔全部收文 59.3%</div>
-    </div>
-    <div class="kpi green">
-      <div class="label">資料涵蓋月份</div>
-      <div class="val">11</div>
-      <div class="sub">2025.07 ～ 2026.05</div>
-    </div>
-    <div class="kpi gold">
-      <div class="label">最高來文月份</div>
-      <div class="val">2026.04</div>
-      <div class="sub">196 件</div>
-    </div>
-    <div class="kpi red">
-      <div class="label">涉及司處數</div>
-      <div class="val">12</div>
-      <div class="sub">最多：學生事務及特殊教育司</div>
-    </div>
-    <div class="kpi purple">
-      <div class="label">來文機關數</div>
-      <div class="val">5</div>
-      <div class="sub">教育部及所屬機關</div>
-    </div>
-  </div>
+  <div class="section-title">儀表板單元</div>
 
-  <!-- Line chart (full width) -->
-  <div class="card" style="margin-bottom:18px">
-    <h2>每月來文趨勢（件數 &amp; 累計）</h2>
-    <canvas id="lineChart" style="max-height:220px"></canvas>
-  </div>
+  <div class="cards">
 
-  <!-- Dept bar + Pie -->
-  <div class="grid-2" style="margin-bottom:18px">
-    <div class="card">
-      <h2>各司處來文件數（橫條）</h2>
-      <canvas id="barChart" style="max-height:300px"></canvas>
-    </div>
-    <div class="card">
-      <h2>司處來文佔比（圓餅）</h2>
-      <canvas id="pieChart" style="max-height:300px"></canvas>
-    </div>
-  </div>
+    <a class="card" href="教育部/index.html">
+      <div class="card-banner"></div>
+      <div class="card-body">
+        <div class="card-icon">📋</div>
+        <div class="card-title">教育部來文分析</div>
+        <div class="card-desc">
+          教育部（含所屬機關）來文公文統計，涵蓋高等教育司、師資培育司、學生事務司等 12 個司處別，資料期間 2025年7月至 2026年5月。
+        </div>
+        <div class="card-meta">
+          <span class="badge blue">1,743 件</span>
+          <span class="badge green">11 個月</span>
+          <span class="badge grey">12 司處</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
 
-  <!-- Table: dept detail + org detail -->
-  <div class="grid-2">
-    <div class="card">
-      <h2>司處別詳細統計</h2>
-      <table>
-        <thead><tr><th>司處別</th><th>件數</th><th>佔比</th><th style="width:110px">比例</th></tr></thead>
-        <tbody><tr><td>學生事務及特殊教育司</td><td class='num'>368</td><td class='pct'>21.1%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:100%'></div></div></td></tr>
-<tr><td>高等教育司</td><td class='num'>356</td><td class='pct'>20.4%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:97%'></div></div></td></tr>
-<tr><td>其他/未分類</td><td class='num'>268</td><td class='pct'>15.4%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:73%'></div></div></td></tr>
-<tr><td>資訊及科技教育司</td><td class='num'>261</td><td class='pct'>15%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:71%'></div></div></td></tr>
-<tr><td>終身教育司</td><td class='num'>168</td><td class='pct'>9.6%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:46%'></div></div></td></tr>
-<tr><td>秘書室</td><td class='num'>92</td><td class='pct'>5.3%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:25%'></div></div></td></tr>
-<tr><td>技術及職業教育司</td><td class='num'>87</td><td class='pct'>5%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:24%'></div></div></td></tr>
-<tr><td>師資培育及藝術教育司</td><td class='num'>83</td><td class='pct'>4.8%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:23%'></div></div></td></tr>
-<tr><td>青年發展署</td><td class='num'>30</td><td class='pct'>1.7%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:8%'></div></div></td></tr>
-<tr><td>體育署</td><td class='num'>16</td><td class='pct'>0.9%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:4%'></div></div></td></tr>
-<tr><td>國際及兩岸教育司</td><td class='num'>11</td><td class='pct'>0.6%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:3%'></div></div></td></tr>
-<tr><td>統計處</td><td class='num'>3</td><td class='pct'>0.2%</td><td><div class='bar-wrap'><div class='bar-fill' style='width:1%'></div></div></td></tr></tbody>
-      </table>
+    <div class="card" style="opacity:.45;pointer-events:none;border:2px dashed var(--border);box-shadow:none">
+      <div class="card-banner" style="background:#e2e8f0"></div>
+      <div class="card-body">
+        <div class="card-icon">➕</div>
+        <div class="card-title" style="color:#a0aec0">新增單元</div>
+        <div class="card-desc">未來可加入其他來文機關的儀表板，例如：國科會、各縣市政府等。</div>
+        <div class="card-meta">
+          <span class="badge grey">即將上線</span>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h2>來文機關彙整</h2>
-      <table>
-        <thead><tr><th>機關名稱</th><th>件數</th></tr></thead>
-        <tbody><tr><td>教育部</td><td class='num'>1696</td></tr>
-<tr><td>教育部青年發展署</td><td class='num'>19</td></tr>
-<tr><td>教育部體育署</td><td class='num'>16</td></tr>
-<tr><td>教育部國民及學前教育署</td><td class='num'>11</td></tr>
-<tr><td>財團法人教育部接受捐助獎學基金會</td><td class='num'>1</td></tr></tbody>
-      </table>
-    </div>
-  </div>
 
+  </div>
 </div>
 
 <footer>
-  教育部來文公文分析 ｜ 產生時間：2026-05-25 12:37 ｜
-  資料來源：公文收文清單 CSV（187 個檔案）
+  公文來文分析平台 ｜ 資料來源：公文收文清單 CSV ｜
+  <a href="https://github.com/lyang0939/moe-document-dashboard" target="_blank">GitHub</a>
 </footer>
 
-<script>
-const COLORS = [
-  '#2b6cb0','#38a169','#d69e2e','#e53e3e','#805ad5',
-  '#dd6b20','#319795','#b7791f','#718096','#3182ce','#48bb78','#f6ad55'
-];
-
-// Line chart
-new Chart(document.getElementById('lineChart'), {
-  data: {
-    labels: ["25.07","25.08","25.09","25.10","25.11","25.12","26.01","26.02","26.03","26.04","26.05"],
-    datasets: [
-      {
-        type: 'bar',
-        label: '當月件數',
-        data: [188,180,165,155,140,139,160,123,166,196,131],
-        backgroundColor: 'rgba(43,108,176,0.18)',
-        borderColor: 'rgba(43,108,176,0.4)',
-        borderWidth: 1,
-        borderRadius: 4,
-        yAxisID: 'y'
-      },
-      {
-        type: 'line',
-        label: '累計件數',
-        data: [188,368,533,688,828,967,1127,1250,1416,1612,1743],
-        borderColor: '#e53e3e',
-        backgroundColor: 'transparent',
-        pointRadius: 4,
-        pointBackgroundColor: '#e53e3e',
-        tension: 0.35,
-        borderWidth: 2.5,
-        yAxisID: 'y2'
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    interaction: { mode: 'index', intersect: false },
-    plugins: { legend: { position: 'top', labels: { font: { size: 12 } } } },
-    scales: {
-      y:  { beginAtZero: true, grid: { color: '#ebf4ff' }, title: { display: true, text: '當月件數' } },
-      y2: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: '累計件數' } }
-    }
-  }
-});
-
-// Bar chart
-new Chart(document.getElementById('barChart'), {
-  type: 'bar',
-  data: {
-    labels: ["學生事務及特殊教育司","高等教育司","其他/未分類","資訊及科技教育司","終身教育司","秘書室","技術及職業教育司","師資培育及藝術教育司","青年發展署","體育署","國際及兩岸教育司","統計處"],
-    datasets: [{ label: '來文件數', data: [368,356,268,261,168,92,87,83,30,16,11,3], backgroundColor: COLORS, borderRadius: 4 }]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { beginAtZero: true, grid: { color: '#ebf4ff' } },
-      y: { ticks: { font: { size: 11 } } }
-    }
-  }
-});
-
-// Pie chart
-new Chart(document.getElementById('pieChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ["學生事務及特殊教育司","高等教育司","其他/未分類","資訊及科技教育司","終身教育司","秘書室","技術及職業教育司","師資培育及藝術教育司","青年發展署","體育署","國際及兩岸教育司","統計處"],
-    datasets: [{ data: [368,356,268,261,168,92,87,83,30,16,11,3], backgroundColor: COLORS, borderWidth: 2, borderColor: '#fff' }]
-  },
-  options: {
-    responsive: true,
-    cutout: '52%',
-    plugins: {
-      legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10, boxWidth: 12 } }
-    }
-  }
-});
-</script>
 </body>
 </html>
